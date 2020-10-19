@@ -2,12 +2,14 @@
   <div class="gameboard">
     <ul class="boxes">
       <li
-        v-for="(value, key) in getBoard"
-        v-bind:key="key"
-        v-bind:class="['box', key]"
-        v-on:click="setMove(key)"
+        v-for="(value, key) in board"
+        :key="key"
+        :class="['box', key]"
+        @click="setMove(key, value)"
       >
-        <p class="box__item">{{ value }}</p>
+        <transition name="fade">
+          <p class="box__item" v-if="value">{{ value }}</p>
+        </transition>
       </li>
     </ul>
   </div>
@@ -18,15 +20,40 @@ export default {
   name: "Board",
 
   methods: {
-    setMove(key) {
+    setMove(key, value) {
+      if (value !== "") {
+        return;
+      }
+
       this.$store.dispatch("setOnBoard", { box: key });
       this.$store.dispatch("checkWinners");
-      this.$store.dispatch("toggleCurrentPlayer");
+      if (!this.gameResult.isWin) {
+        this.$store.dispatch("toggleCurrentPlayer");
+      }
+      this.$store.dispatch("checkDraw");
+      this.$store.dispatch("checkIsGameOver");
+      this.clearBoard();
+    },
+
+    clearBoard() {
+      if (this.gameResult.isGameOver) {
+        this.$store.dispatch("clearBoard");
+      }
     },
   },
+
   computed: {
-    getBoard() {
+    board() {
       return this.$store.state.board;
+    },
+
+    gameResult() {
+      return {
+        isWin: this.$store.state.isCurrentPlayerWin,
+        winner: this.$store.state.currentPlayer,
+        isDraw: this.$store.state.isDraw,
+        isGameOver: this.$store.state.isGameOver,
+      };
     },
   },
 };
@@ -34,11 +61,16 @@ export default {
 
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap");
-
 .gameboard {
   width: 400px;
   height: 400px;
   background: rgb(136, 114, 100);
+  margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
 }
 
 .boxes {
@@ -60,11 +92,24 @@ export default {
   align-items: center;
 }
 
+.box_disabled {
+  cursor: not-allowed;
+}
+
 .box__item {
   font-family: "Architects Daughter", cursive;
   margin: 0;
   line-height: 1;
   font-size: 86px;
   font-weight: 800;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

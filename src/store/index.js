@@ -28,8 +28,10 @@ export default new Vuex.Store({
       9: "",
     },
 
-    isCurrentPlayerWin: undefined,
     currentPlayer: "X",
+    isCurrentPlayerWin: false,
+    isDraw: false,
+    isGameOver: false,
   },
 
   mutations: {
@@ -43,6 +45,20 @@ export default new Vuex.Store({
 
     setIsCurrentPlayerWin(state, { isWin }) {
       state.isCurrentPlayerWin = isWin;
+    },
+
+    setIsDraw(state, { isDraw }) {
+      state.isDraw = isDraw;
+    },
+
+    setIsGameOver(state) {
+      state.isGameOver = true;
+    },
+
+    clearBoard(state) {
+      Object.keys(state.board).forEach((box) => {
+        state.board[box] = "";
+      });
     },
   },
 
@@ -61,6 +77,26 @@ export default new Vuex.Store({
       );
 
       commit("setIsCurrentPlayerWin", { isWin });
+    },
+
+    checkDraw({ commit, state }) {
+      const isDraw = Object.keys(state.board).every(
+        (box) => state.board[box] !== ""
+      );
+
+      if (!state.isCurrentPlayerWin && isDraw) {
+        commit("setIsDraw", { isDraw });
+      }
+    },
+
+    checkIsGameOver({ commit, state }) {
+      if (state.isCurrentPlayerWin || state.isDraw) {
+        commit("setIsGameOver");
+      }
+    },
+
+    clearBoard(context) {
+      setTimeout(() => context.commit("clearBoard"), 1500);
     },
   },
 });

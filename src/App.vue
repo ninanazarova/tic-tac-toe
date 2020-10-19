@@ -1,16 +1,19 @@
 <template>
   <div id="app">
     <Board />
+    <Modal />
   </div>
 </template>
 
 <script>
 import Board from "./components/Board.vue";
+import Modal from "./components/Modal.vue";
 
 export default {
   name: "App",
   components: {
     Board,
+    Modal,
   },
 };
 </script>
@@ -22,6 +25,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: rgb(87, 76, 70);
-  margin-top: 60px;
 }
 </style>
