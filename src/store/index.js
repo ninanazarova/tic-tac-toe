@@ -28,13 +28,40 @@ export default new Vuex.Store({
       9: "",
     },
 
-    currentPlayer: "X",
+    currentPlayer: "",
     isCurrentPlayerWin: false,
     isDraw: false,
     isGameOver: false,
+
+    showModal: true,
+    gameConfig: {
+      1: {
+        question: "Choose how you want to play?",
+        buttonsNames: ["player", "computer"],
+      },
+
+      2: {
+        question: "Select a marker",
+        buttonsNames: ["X", "O"],
+      },
+
+      versus: "",
+    },
   },
 
   mutations: {
+    toggleModal(state) {
+      state.showModal = !state.showModal;
+    },
+
+    setVersus(state, { versus }) {
+      state.gameConfig.versus = versus;
+    },
+
+    setCurrentPlayer(state, { currentPlayer }) {
+      state.currentPlayer = currentPlayer;
+    },
+
     setOnBoard(state, { box }) {
       state.board[box] = state.currentPlayer;
     },
@@ -63,6 +90,18 @@ export default new Vuex.Store({
   },
 
   actions: {
+    toggleModal(context) {
+      context.commit("toggleModal");
+    },
+
+    setVersus(context, { versus }) {
+      context.commit("setVersus", { versus });
+    },
+
+    setCurrentPlayer(context, { currentPlayer }) {
+      context.commit("setCurrentPlayer", { currentPlayer });
+    },
+
     setOnBoard(context, { box }) {
       context.commit("setOnBoard", { box });
     },

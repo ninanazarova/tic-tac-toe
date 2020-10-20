@@ -1,10 +1,29 @@
 <template>
-  <transition name="modal" v-if="gameResult.isGameOver">
+  <transition name="modal" v-if="showModal">
     <div class="modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container">
-          <p v-if="gameResult.isWin">{{ gameResult.winner }} win!</p>
-          <p v-if="gameResult.isDraw">Draw!</p>
+          <h3>{{ gameConfig[currentConfig].question }}</h3>
+          <h3 v-if="gameResult.isWin">{{ gameResult.winner }} win!</h3>
+          <h3 v-if="gameResult.isDraw">Draw!</h3>
+          <BaseButton
+            :text="gameConfig[currentConfig].buttonsNames[0]"
+            :onClick="onNewGame"
+          />
+          <BaseButton
+            :text="gameConfig[currentConfig].buttonsNames[1]"
+            :onClick="onNewGame"
+          />
+          <!-- <BaseButton
+            v-if="gameResult.isGameOver"
+            text="New game"
+            :onClick="onNewGame"
+          />
+          <BaseButton
+            v-if="gameResult.isGameOver"
+            text="Restart"
+            :onClick="onNewGame"
+          /> -->
         </div>
       </div>
     </div>
@@ -12,10 +31,40 @@
 </template>
 
 <script>
+import BaseButton from "./BaseButton.vue";
 export default {
   name: "Modal",
+  components: {
+    BaseButton,
+  },
+  data: function() {
+    return {
+      currentConfig: 1,
+    };
+  },
+
+  methods: {
+    onNewGame(text) {
+      if (text === ("player" || "computer")) {
+        this.$store.dispatch("setVersus", { versus: text });
+        this.currentConfig++;
+      }
+
+      if (text === ("X" || "O")) {
+        this.$store.dispatch("setCurrentPlayer", { currentPlayer: text });
+        this.$store.dispatch("toggleModal");
+      }
+    },
+  },
 
   computed: {
+    gameConfig() {
+      return this.$store.state.gameConfig;
+    },
+    showModal() {
+      return this.$store.state.showModal;
+    },
+
     gameResult() {
       return {
         isWin: this.$store.state.isCurrentPlayerWin,
