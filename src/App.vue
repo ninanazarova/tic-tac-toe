@@ -6,16 +6,16 @@
 </template>
 
 <script>
-import Board from "./components/Board.vue";
-import Modal from "./components/Modal.vue";
+import Board from './components/Board.vue'
+import Modal from './components/Modal.vue'
 
 export default {
-  name: "App",
+  name: 'App',
   components: {
     Board,
     Modal,
   },
-};
+}
 </script>
 
 <style>

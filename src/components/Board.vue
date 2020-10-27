@@ -16,51 +16,49 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  name: "Board",
+  name: 'Board',
 
   methods: {
     setMove(key, value) {
-      if (value !== "") {
-        return;
+      if (value !== '') {
+        return
       }
 
-      this.$store.dispatch("setOnBoard", { box: key });
-      this.$store.dispatch("checkWinners");
+      this.$store.dispatch('setOnBoard', { box: key })
+      this.$store.dispatch('checkWinners')
       if (!this.gameResult.isWin) {
-        this.$store.dispatch("toggleCurrentPlayer");
+        this.$store.dispatch('toggleCurrentPlayer')
       }
-      this.$store.dispatch("checkDraw");
-      this.$store.dispatch("checkIsGameOver");
-      this.clearBoard();
+      this.$store.dispatch('checkDraw')
+      this.$store.dispatch('checkIsGameOver')
+      this.clearBoard()
     },
 
     clearBoard() {
       if (this.gameResult.isGameOver) {
-        this.$store.dispatch("clearBoard");
+        // this.$store.dispatch("showGameResultModal");
+        this.$store.dispatch('clearBoard')
       }
     },
   },
 
-  computed: {
-    board() {
-      return this.$store.state.board;
-    },
-
-    gameResult() {
-      return {
-        isWin: this.$store.state.isCurrentPlayerWin,
-        winner: this.$store.state.currentPlayer,
-        isDraw: this.$store.state.isDraw,
-        isGameOver: this.$store.state.isGameOver,
-      };
-    },
-  },
-};
+  computed: mapState({
+    board: (state) => state.board,
+    gameResult: (state) => ({
+      isWin: state.isCurrentPlayerWin,
+      winner: state.currentPlayer,
+      isDraw: state.isDraw,
+      isGameOver: state.isGameOver,
+    }),
+  }),
+}
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
 .gameboard {
   width: 400px;
   height: 400px;
@@ -97,7 +95,7 @@ export default {
 }
 
 .box__item {
-  font-family: "Architects Daughter", cursive;
+  font-family: 'Architects Daughter', cursive;
   margin: 0;
   line-height: 1;
   font-size: 86px;

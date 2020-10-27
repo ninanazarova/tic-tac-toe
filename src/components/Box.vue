@@ -11,16 +11,16 @@
 
 <script>
 export default {
-  props: ["number", "value", "board"],
+  props: ['number', 'value', 'board'],
 
   data: function() {
     return {
       isDisabled: false,
-    };
+    }
   },
 
   methods: {},
-};
+}
 </script>
 
 <style>
@@ -36,7 +36,7 @@ export default {
 }
 
 .box__item {
-  font-family: "Architects Daughter", cursive;
+  font-family: 'Architects Daughter', cursive;
   margin: 0;
   line-height: 1;
   font-size: 86px;

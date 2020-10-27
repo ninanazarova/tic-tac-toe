@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "BaseButton",
+  name: 'BaseButton',
   props: {
     text: {
       type: String,
@@ -18,7 +18,7 @@ export default {
       required: true,
     },
   },
-};
+}
 </script>
 
 <style>

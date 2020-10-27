@@ -1,80 +1,95 @@
 <template>
-  <transition name="modal" v-if="showModal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-          <h3>{{ gameConfig[currentConfig].question }}</h3>
-          <h3 v-if="gameResult.isWin">{{ gameResult.winner }} win!</h3>
-          <h3 v-if="gameResult.isDraw">Draw!</h3>
-          <BaseButton
-            :text="gameConfig[currentConfig].buttonsNames[0]"
-            :onClick="onNewGame"
-          />
-          <BaseButton
-            :text="gameConfig[currentConfig].buttonsNames[1]"
-            :onClick="onNewGame"
-          />
-          <!-- <BaseButton
-            v-if="gameResult.isGameOver"
-            text="New game"
-            :onClick="onNewGame"
-          />
-          <BaseButton
-            v-if="gameResult.isGameOver"
-            text="Restart"
-            :onClick="onNewGame"
-          /> -->
+  <div>
+    <transition name="modal" v-if="$store.state.showConfigModal">
+      <div class="modal-mask">
+        <div class="modal-wrapper">
+          <div class="modal-container">
+            <h3>{{ gameConfig[currentConfig].question }}</h3>
+            <BaseButton
+              :text="gameConfig[currentConfig].buttonsNames[0]"
+              :onClick="onNewGame"
+            />
+            <BaseButton
+              :text="gameConfig[currentConfig].buttonsNames[1]"
+              :onClick="onNewGame"
+            />
+          </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </transition>
+
+    <transition name="modal" v-if="gameResult.isGameOver">
+      <div class="modal-mask">
+        <div class="modal-wrapper">
+          <div class="modal-container">
+            <h3 v-if="gameResult.isWin">{{ gameResult.winner }} win!</h3>
+            <h3 v-if="gameResult.isDraw">Draw!</h3>
+            <BaseButton text="New game" :onClick="onNewGame" />
+            <BaseButton text="Continue" :onClick="hideGameResultModal" />
+          </div>
+        </div>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
-import BaseButton from "./BaseButton.vue";
+import { mapState } from 'vuex'
+import BaseButton from './BaseButton.vue'
 export default {
-  name: "Modal",
+  name: 'Modal',
   components: {
     BaseButton,
   },
   data: function() {
     return {
       currentConfig: 1,
-    };
+    }
   },
 
   methods: {
+    showConfigModal() {
+      this.$store.dispatch('showConfigModal')
+    },
+
+    showGameResultModal() {
+      this.$store.dispatch('showGameResultModal')
+    },
+
+    hideGameResultModal() {
+      this.$store.dispatch('hideGameResultModal')
+    },
+    hideConfigModal() {
+      this.$store.dispatch('hideConfigModal')
+    },
+
     onNewGame(text) {
-      if (text === ("player" || "computer")) {
-        this.$store.dispatch("setVersus", { versus: text });
-        this.currentConfig++;
+      this.$store.dispatch('getInitialState')
+
+      if (text === 'player' || text === 'computer') {
+        this.$store.dispatch('setVersus', { versus: text })
+        this.currentConfig++
       }
 
-      if (text === ("X" || "O")) {
-        this.$store.dispatch("setCurrentPlayer", { currentPlayer: text });
-        this.$store.dispatch("toggleModal");
+      if (text === 'X' || text === 'O') {
+        this.$store.dispatch('setCurrentPlayer', { currentPlayer: text })
+        this.hideConfigModal()
+        this.currentConfig--
       }
     },
   },
 
-  computed: {
-    gameConfig() {
-      return this.$store.state.gameConfig;
-    },
-    showModal() {
-      return this.$store.state.showModal;
-    },
+  computed: mapState({
+    gameConfig: (state) => state.gameConfig,
 
-    gameResult() {
-      return {
-        isWin: this.$store.state.isCurrentPlayerWin,
-        winner: this.$store.state.currentPlayer,
-        isDraw: this.$store.state.isDraw,
-        isGameOver: this.$store.state.isGameOver,
-      };
-    },
-  },
-};
+    gameResult: (state) => ({
+      isWin: state.isCurrentPlayerWin,
+      winner: state.currentPlayer,
+      isDraw: state.isDraw,
+      isGameOver: state.isGameOver,
+    }),
+  }),
+}
 </script>
 
 <style>
