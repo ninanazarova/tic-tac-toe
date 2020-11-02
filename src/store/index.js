@@ -32,92 +32,44 @@ const initialState = () => ({
   isDraw: false,
   isGameOver: false,
 
-  showConfigModal: true,
-  showGameResultModal: false,
-
   gameConfig: {
-    1: {
-      question: 'Choose how you want to play?',
-      buttonsNames: ['player', 'computer'],
-    },
-
-    2: {
-      question: 'Select a marker',
-      buttonsNames: ['X', 'O'],
-    },
-
+    dialog: true,
     versus: '',
+    nameX: '',
+    nameO: '',
+    playerName: '',
+    firstMove: '',
   },
 })
 
 export default new Vuex.Store({
   strict: true,
-  // state: {
-  //   winCombinations: [
-  //     [1, 2, 3],
-  //     [4, 5, 6],
-  //     [7, 8, 9],
-  //     [1, 4, 7],
-  //     [2, 5, 8],
-  //     [3, 6, 9],
-  //     [1, 5, 9],
-  //     [7, 5, 3],
-  //   ],
-
-  //   board: {
-  //     1: "",
-  //     2: "",
-  //     3: "",
-  //     4: "",
-  //     5: "",
-  //     6: "",
-  //     7: "",
-  //     8: "",
-  //     9: "",
-  //   },
-
-  //   currentPlayer: "",
-  //   isCurrentPlayerWin: false,
-  //   isDraw: false,
-  //   isGameOver: false,
-
-  //   showConfigModal: true,
-  //   showGameResultModal: false,
-
-  //   gameConfig: {
-  //     1: {
-  //       question: "Choose how you want to play?",
-  //       buttonsNames: ["player", "computer"],
-  //     },
-
-  //     2: {
-  //       question: "Select a marker",
-  //       buttonsNames: ["X", "O"],
-  //     },
-
-  //     versus: "",
-  //   },
-  // },
-
   state: initialState(),
 
   mutations: {
-    showConfigModal(state) {
-      state.showConfigModal = true
-    },
-    hideConfigModal(state) {
-      state.showConfigModal = false
-    },
-
-    showGameResultModal(state) {
-      state.showGameResultModal = true
-    },
-    hideGameResultModal(state) {
-      state.showGameResultModal = false
+    toggleDialog(state) {
+      state.gameConfig.dialog = !state.gameConfig.dialog
     },
 
     setVersus(state, { versus }) {
       state.gameConfig.versus = versus
+    },
+
+    setNameX(state, { nameX }) {
+      state.gameConfig.nameX = nameX
+    },
+
+    setNameO(state, { nameO }) {
+      state.gameConfig.nameO = nameO
+    },
+
+    setPlayerName(state, { playerName }) {
+      state.gameConfig.playerName = playerName
+    },
+
+    setFirstMove(state, { firstMove }) {
+      state.gameConfig.firstMove = firstMove
+      state.currentPlayer = firstMove
     },
 
     setCurrentPlayer(state, { currentPlayer }) {
@@ -156,22 +108,27 @@ export default new Vuex.Store({
   },
 
   actions: {
-    showConfigModal(context) {
-      context.commit('showConfigModal')
+    toggleDialog(context) {
+      context.commit('toggleDialog')
     },
-    hideConfigModal(context) {
-      context.commit('hideConfigModal')
-    },
-
-    showGameResultModal(context) {
-      context.commit('showGameResultModal')
-    },
-    hideGameResultModal(context) {
-      context.commit('hideGameResultModal')
-    },
-
     setVersus(context, { versus }) {
       context.commit('setVersus', { versus })
+    },
+
+    setNameX(context, { nameX }) {
+      context.commit('setNameX', { nameX })
+    },
+
+    setNameO(context, { nameO }) {
+      context.commit('setNameO', { nameO })
+    },
+
+    setPlayerName(context, { playerName }) {
+      context.commit('setPlayerName', { playerName })
+    },
+
+    setFirstMove(context, { firstMove }) {
+      context.commit('setFirstMove', { firstMove })
     },
 
     setCurrentPlayer(context, { currentPlayer }) {
@@ -187,8 +144,8 @@ export default new Vuex.Store({
     },
 
     checkWinners({ commit, state }) {
-      const isWin = state.winCombinations.some((combo) =>
-        combo.every((move) => state.board[move] === state.currentPlayer),
+      const isWin = state.winCombinations.some(
+        (combo) => combo.every((move) => state.board[move] === state.currentPlayer),
       )
 
       commit('setIsCurrentPlayerWin', { isWin })

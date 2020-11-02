@@ -1,146 +1,202 @@
 <template>
-  <div>
-    <transition name="modal" v-if="$store.state.showConfigModal">
-      <div class="modal-mask">
-        <div class="modal-wrapper">
-          <div class="modal-container">
-            <h3>{{ gameConfig[currentConfig].question }}</h3>
-            <BaseButton
-              :text="gameConfig[currentConfig].buttonsNames[0]"
-              :onClick="onNewGame"
-            />
-            <BaseButton
-              :text="gameConfig[currentConfig].buttonsNames[1]"
-              :onClick="onNewGame"
-            />
-          </div>
-        </div>
-      </div>
-    </transition>
+  <v-row justify="center">
+    <v-dialog
+      v-model="dialog"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <v-card class="text-center">
+        <v-toolbar
+          dark
+          color="amber darken-4"
+        >
+          <!-- <v-btn icon dark @click="dialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn> -->
+          <v-toolbar-title>Game Configarations</v-toolbar-title>
+          <v-spacer />
+          <v-toolbar-items />
+        </v-toolbar>
 
-    <transition name="modal" v-if="gameResult.isGameOver">
-      <div class="modal-mask">
-        <div class="modal-wrapper">
-          <div class="modal-container">
-            <h3 v-if="gameResult.isWin">{{ gameResult.winner }} win!</h3>
-            <h3 v-if="gameResult.isDraw">Draw!</h3>
-            <BaseButton text="New game" :onClick="onNewGame" />
-            <BaseButton text="Continue" :onClick="hideGameResultModal" />
-          </div>
-        </div>
-      </div>
-    </transition>
-  </div>
+        <v-list
+          three-line
+          subheader
+        >
+          <v-list-item class="d-flex justify-center">
+            <v-subheader>Who do you want to play against?</v-subheader>
+            <v-radio-group v-model="versus">
+              <v-radio
+                value="player"
+                :label="`Player`"
+              />
+              <v-radio
+                value="computer"
+                :label="`Computer`"
+              />
+            </v-radio-group>
+          </v-list-item>
+
+          <v-list-item
+            v-if="versus === 'player'"
+            class="d-flex justify-center"
+          >
+            <v-form>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
+                    <v-text-field
+                      v-model="nameX"
+                      label="Insert player X name"
+                      outlined
+                    />
+                  </v-col>
+
+                  <v-col
+                    cols="12"
+                    sm="6"
+                  >
+                    <v-text-field
+                      v-model="nameO"
+                      label="Insert player O name"
+                      outlined
+                    />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </v-list-item>
+
+          <v-list-item
+            v-if="versus === 'player' && nameX && nameO"
+            class="d-flex justify-center"
+          >
+            <v-subheader>Who will move first?</v-subheader>
+            <v-radio-group v-model="firstMove">
+              <v-radio
+                value="X"
+                :label="`X`"
+              />
+              <v-radio
+                value="O"
+                :label="`O`"
+              />
+            </v-radio-group>
+          </v-list-item>
+
+          <v-list-item
+            v-if="versus === 'computer'"
+            class="d-flex justify-center"
+          >
+            <v-form>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    sm="12"
+                  >
+                    <v-text-field
+                      v-model="playerName"
+                      label="Insert your name"
+                      outlined
+                    />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </v-list-item>
+
+          <v-list-item
+            v-if="versus === 'computer' && playerName"
+            class="d-flex justify-center"
+          >
+            <v-subheader>Like who do you want to play?</v-subheader>
+            <v-radio-group v-model="firstMove">
+              <v-radio
+                value="X"
+                :label="`X`"
+              />
+              <v-radio
+                value="O"
+                :label="`O`"
+              />
+            </v-radio-group>
+          </v-list-item>
+        </v-list>
+
+        <v-btn
+          v-if="versus && ((nameX && nameO) || playerName) && firstMove"
+          x-large
+          color="success"
+          dark
+          class="mt-16"
+          @click="dialog = false"
+        >
+          Start the game
+        </v-btn>
+      </v-card>
+    </v-dialog>
+  </v-row>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import BaseButton from './BaseButton.vue'
 export default {
   name: 'Modal',
-  components: {
-    BaseButton,
+
+  computed: {
+    dialog: {
+      get() {
+        return this.$store.state.gameConfig.dialog
+      },
+      set() {
+        this.$store.dispatch('toggleDialog')
+      },
+    },
+    versus: {
+      get() {
+        return this.$store.state.gameConfig.versus
+      },
+      set(value) {
+        this.$store.dispatch('setVersus', { versus: value })
+      },
+    },
+    nameX: {
+      get() {
+        return this.$store.state.gameConfig.nameX
+      },
+      set(value) {
+        this.$store.dispatch('setNameX', { nameX: value })
+      },
+    },
+    nameO: {
+      get() {
+        return this.$store.state.gameConfig.nameO
+      },
+      set(value) {
+        this.$store.dispatch('setNameO', { nameO: value })
+      },
+    },
+    firstMove: {
+      get() {
+        return this.$store.state.gameConfig.firstMove
+      },
+      set(value) {
+        this.$store.dispatch('setFirstMove', { firstMove: value })
+      },
+    },
+    playerName: {
+      get() {
+        return this.$store.state.gameConfig.playerName
+      },
+      set(value) {
+        this.$store.dispatch('setPlayerName', { playerName: value })
+      },
+    },
   },
-  data: function() {
-    return {
-      currentConfig: 1,
-    }
-  },
-
-  methods: {
-    showConfigModal() {
-      this.$store.dispatch('showConfigModal')
-    },
-
-    showGameResultModal() {
-      this.$store.dispatch('showGameResultModal')
-    },
-
-    hideGameResultModal() {
-      this.$store.dispatch('hideGameResultModal')
-    },
-    hideConfigModal() {
-      this.$store.dispatch('hideConfigModal')
-    },
-
-    onNewGame(text) {
-      this.$store.dispatch('getInitialState')
-
-      if (text === 'player' || text === 'computer') {
-        this.$store.dispatch('setVersus', { versus: text })
-        this.currentConfig++
-      }
-
-      if (text === 'X' || text === 'O') {
-        this.$store.dispatch('setCurrentPlayer', { currentPlayer: text })
-        this.hideConfigModal()
-        this.currentConfig--
-      }
-    },
-  },
-
-  computed: mapState({
-    gameConfig: (state) => state.gameConfig,
-
-    gameResult: (state) => ({
-      isWin: state.isCurrentPlayerWin,
-      winner: state.currentPlayer,
-      isDraw: state.isDraw,
-      isGameOver: state.isGameOver,
-    }),
-  }),
 }
 </script>
 
-<style>
-.modal-mask {
-  position: fixed;
-  z-index: 9998;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: table;
-  transition: opacity 0.3s ease;
-}
-
-.modal-wrapper {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.modal-container {
-  width: 300px;
-  margin: 0px auto;
-  padding: 20px 30px;
-  background-color: #fff;
-  border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-  transition: all 0.3s ease;
-  font-family: Helvetica, Arial, sans-serif;
-}
-
-/*
- * The following styles are auto-applied to elements with
- * transition="modal" when their visibility is toggled
- * by Vue.js.
- *
- * You can easily play with the modal transition by editing
- * these styles.
- */
-
-.modal-enter {
-  opacity: 0;
-}
-
-.modal-leave-active {
-  opacity: 0;
-}
-
-.modal-enter .modal-container,
-.modal-leave-active .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-}
-</style>
+<style></style>

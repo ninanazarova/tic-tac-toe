@@ -5,15 +5,28 @@
     :class="['box', number, isDisabled ? 'box_disabled' : '']"
     @click="isDisabled = !isDisabled"
   >
-    <p class="box__item">{{ value }}</p>
+    <p class="box__item">
+      {{ value }}
+    </p>
   </li>
 </template>
 
 <script>
 export default {
-  props: ['number', 'value', 'board'],
 
-  data: function() {
+  props: {
+    number: {
+      type: Number,
+      default: 0,
+    },
+
+    value: {
+      type: String,
+      default: '',
+    },
+  },
+
+  data() {
     return {
       isDisabled: false,
     }
